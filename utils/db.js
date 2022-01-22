@@ -23,7 +23,7 @@
 
 import mongoose from "mongoose";
 
-export default async function handler(req, res) {
+export async function dbConnect() {
   const uri = process.env.MONGODB_URI;
   console.log(uri);
 
@@ -31,14 +31,23 @@ export default async function handler(req, res) {
     await mongoose.connect(uri);
 
     console.log("connected");
-    const kittySchema = new mongoose.Schema({
-      name: String,
-    });
-    const Kitten = mongoose.model("Kitten", kittySchema);
-    const fluffy = new Kitten({ name: "fluffy" });
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await mongoose.disconnect();
+  } catch (e) {
+    console.log(e);
   }
-  res.status(200).json({ name: "John Doe" });
+}
+
+export async function dbDisconnect() {
+  try {
+    await mongoose.disconnect();
+    console.log("Disconnected");
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export function convertDocToObj(doc) {
+  doc._id = doc._id.toString();
+  doc.createdAt = doc.createdAt.toString();
+  doc.updatedAt = doc.updatedAt.toString();
+  return doc;
 }

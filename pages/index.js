@@ -10,10 +10,13 @@ import {
   Typography,
 } from "@mui/material";
 import Layout from "../src/components/Layout";
-import data from "../utils/data";
 import NextLink from "next/link";
+import { dbConnect, dbDisconnect, convertDocToObj } from "../utils/db";
+import Product from "../models/Prodoct";
 
-export default function Home() {
+export default function Home(props) {
+  const data = props;
+
   return (
     <Layout>
       <div>
@@ -49,4 +52,16 @@ export default function Home() {
       </div>
     </Layout>
   );
+}
+
+export async function getServerSideProps(context) {
+  await dbConnect();
+  const products = await Product.find({}).lean();
+  await dbDisconnect();
+
+  return {
+    props: {
+      products: products.map(convertDocToObj),
+    },
+  };
 }

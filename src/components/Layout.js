@@ -15,6 +15,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { red } from "@mui/material/colors";
 import { Context } from "../../utils/Storage";
 import { createTheme } from "@mui/material/styles";
+import Cookies from "js-cookie";
 
 const Layout = (props) => {
   const classes = useStyles();
@@ -23,7 +24,10 @@ const Layout = (props) => {
   const { darkMode } = state;
   console.log(darkMode);
   const darkModeChangeHandler = () => {
+    // console.log(`before dispatch ${darkMode}`);
     dispatch({ type: darkMode ? "DARK_MODE_OFF" : "DARK_MODE_ON" });
+    // // console.log(`after dispatch ${darkMode}`);
+    // Cookies.set("DarkMode", darkMode ? "ON" : "OFF");
   };
 
   const theme = createTheme({
