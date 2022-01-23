@@ -8,25 +8,29 @@ import {
   Switch,
   Toolbar,
   Typography,
+  Badge,
+  createTheme,
 } from "@mui/material";
 import useStyles from "../../utils/styles";
 import NextLink from "next/link";
 import { ThemeProvider } from "@mui/material/styles";
 import { red } from "@mui/material/colors";
-import { Context } from "../../utils/Storage";
-import { createTheme } from "@mui/material/styles";
-import Cookies from "js-cookie";
+import { Storage } from "../../utils/Storage";
 
 const Layout = (props) => {
   const classes = useStyles();
 
-  const { state, dispatch } = useContext(Context);
-  const { darkMode } = state;
+  const { state, dispatch } = useContext(Storage);
+  console.log("-------------------");
+
+  const { darkMode, cart } = state;
+  console.log(cart.cartItems.length);
   console.log(darkMode);
+
   const darkModeChangeHandler = () => {
     // console.log(`before dispatch ${darkMode}`);
     dispatch({ type: darkMode ? "DARK_MODE_OFF" : "DARK_MODE_ON" });
-    // // console.log(`after dispatch ${darkMode}`);
+    // console.log(`after dispatch ${darkMode}`);
     // Cookies.set("DarkMode", darkMode ? "ON" : "OFF");
   };
 
@@ -72,7 +76,16 @@ const Layout = (props) => {
             <Switch checked={darkMode} onChange={darkModeChangeHandler} />
             <div>
               <NextLink href="/cart" passHref>
-                <Link>cart</Link>
+                <Link>
+                  {cart.cartItems.length > 0 && (
+                    <Badge
+                      badgeContent={cart.cartItems.length}
+                      color="secondary"
+                    >
+                      Cart
+                    </Badge>
+                  )}
+                </Link>
               </NextLink>
             </div>
             <div>

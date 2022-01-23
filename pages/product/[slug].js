@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import { useRouter } from "next/router";
 import data from "../../utils/data";
 import Layout from "../../src/components/Layout";
@@ -16,14 +16,26 @@ import Image from "next/image";
 import useStyles from "../../utils/styles";
 import { convertDocToObj, dbConnect, dbDisconnect } from "../../utils/db";
 import Product from "../../models/Prodoct";
+import { Storage } from "../../utils/Storage";
 
 const ProductPage = (props) => {
+  const { state, dispatch } = useContext(Storage);
+
   const { product } = props;
 
   const classes = useStyles();
   if (!product) {
     return <div>No product found</div>;
   }
+
+  const addToCartHandler = () => {
+    dispatch({
+      type: "CART_ADD_ITEM",
+      payload: product,
+    });
+    console.log(product);
+  };
+
   return (
     <Layout title={product.name} description={product.description}>
       <div className={classes.section}>
@@ -92,7 +104,12 @@ const ProductPage = (props) => {
                 </Grid>
               </ListItem>
               <ListItem>
-                <Button fullWidth variant="contained" color="primary">
+                <Button
+                  fullWidth
+                  variant="contained"
+                  color="primary"
+                  onClick={addToCartHandler}
+                >
                   Add to cart
                 </Button>
               </ListItem>
