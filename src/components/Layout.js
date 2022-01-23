@@ -24,8 +24,6 @@ const Layout = (props) => {
   console.log("-------------------");
 
   const { darkMode, cart } = state;
-  console.log(cart.cartItems.length);
-  console.log(darkMode);
 
   const darkModeChangeHandler = () => {
     // console.log(`before dispatch ${darkMode}`);
