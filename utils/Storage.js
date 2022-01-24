@@ -1,11 +1,17 @@
 import { createContext, useReducer } from "react";
+import Cookies from "js-cookie";
 
 export const Storage = createContext();
 
 //Cookies.get("DarkMode") === "ON" ? true : false
 const initialState = {
   darkMode: false,
-  cart: { cartItems: [], totalAmount: 0 },
+  cart: {
+    cartItems: Cookies.get("cartItems")
+      ? JSON.parse(Cookies.get("cartItems"))
+      : [],
+    totalAmount: 0,
+  },
 };
 
 const reducer = (state, action) => {
@@ -38,6 +44,7 @@ const reducer = (state, action) => {
             return item.name === existItem.name ? updatedItem : item;
           })
         : [...state.cart.cartItems, updatedItem];
+      Cookies.set("cartItems", JSON.stringify(updatedCartItems));
       // const updatedCart = { ...state.cart, cartItems: updatedCartItems };
       // console.log("update the state");
       // console.log({ ...state, cart: updatedCart });
