@@ -33,7 +33,7 @@ const ProductPage = (props) => {
       type: "CART_ADD_ITEM",
       payload: product,
     });
-    console.log(product);
+    // console.log(product);
   };
 
   return (

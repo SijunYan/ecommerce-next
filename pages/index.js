@@ -13,9 +13,17 @@ import Layout from "../src/components/Layout";
 import NextLink from "next/link";
 import { dbConnect, dbDisconnect, convertDocToObj } from "../utils/db";
 import Product from "../models/Prodoct";
+import { Storage } from "../utils/Storage";
 
 export default function Home(props) {
+  const { state, dispatch } = useContext(Storage);
   const data = props;
+  const addToCartHandler = (product) => {
+    dispatch({
+      type: "CART_ADD_ITEM",
+      payload: product,
+    });
+  };
 
   return (
     <Layout>
@@ -41,7 +49,13 @@ export default function Home(props) {
 
                 <CardActions>
                   <Typography>$ {product.price}</Typography>
-                  <Button size="small" color="primary">
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={(e) => {
+                      addToCartHandler(product);
+                    }}
+                  >
                     Add to cart
                   </Button>
                 </CardActions>

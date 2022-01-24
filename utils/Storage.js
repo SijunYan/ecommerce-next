@@ -22,13 +22,13 @@ const reducer = (state, action) => {
       return { ...state, darkMode: false };
     case "CART_ADD_ITEM": {
       const newItem = action.payload;
-      console.log(newItem.name);
+      // console.log(newItem.name);
       // check if there is the item in the cart already, to calculate the quantity in cart
       const existItem = state.cart.cartItems.find((item) => {
         return item.name === newItem.name;
       });
       const quantity = existItem ? existItem.quantity + 1 : 1;
-      console.log(`instock: ${newItem.countInStock}; inCart: ${quantity}`);
+      // console.log(`instock: ${newItem.countInStock}; inCart: ${quantity}`);
       //check stocks, if stocks<quantity, stop dispatch. oterwise, dispatch with the product info and quantity
       if (newItem.countInStock < quantity) {
         window.alert("Sorry. Product is out of stock");
@@ -37,7 +37,7 @@ const reducer = (state, action) => {
       const updatedItem = existItem
         ? { ...existItem, quantity }
         : { ...newItem, quantity };
-      console.log(updatedItem);
+      // console.log(updatedItem);
       // update the cartItems, then the cart, finally the entire state
       const updatedCartItems = existItem
         ? state.cart.cartItems.map((item) => {
@@ -49,6 +49,36 @@ const reducer = (state, action) => {
       // console.log("update the state");
       // console.log({ ...state, cart: updatedCart });
       // return { ...state, cart: updatedCart };
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          cartItems: updatedCartItems,
+        },
+      };
+    }
+    case "CART_UPDATE_ITEM": {
+      // updatedItem include quantity already.
+      const updatedItem = action.payload;
+      // update the cartItems, then the cart, finally the entire state
+      const updatedCartItems = state.cart.cartItems.map((item) => {
+        return item.name === updatedItem.name ? updatedItem : item;
+      });
+      Cookies.set("cartItems", JSON.stringify(updatedCartItems));
+      return {
+        ...state,
+        cart: {
+          ...state.cart,
+          cartItems: updatedCartItems,
+        },
+      };
+    }
+    case "CART_DELETE_ITEM": {
+      const deleteItem = action.payload;
+      const updatedCartItems = state.cart.cartItems.filter(
+        (item) => item.name !== deleteItem.name
+      );
+      Cookies.set("cartItems", JSON.stringify(updatedCartItems));
       return {
         ...state,
         cart: {

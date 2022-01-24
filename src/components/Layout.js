@@ -21,7 +21,6 @@ const Layout = (props) => {
   const classes = useStyles();
 
   const { state, dispatch } = useContext(Storage);
-  console.log("-------------------");
 
   const { darkMode, cart } = state;
 
@@ -77,7 +76,12 @@ const Layout = (props) => {
                 <Link>
                   {cart.cartItems.length > 0 && (
                     <Badge
-                      badgeContent={cart.cartItems.length}
+                      badgeContent={cart.cartItems.reduce(
+                        (previous, current) => {
+                          return previous + current.quantity;
+                        },
+                        0
+                      )}
                       color="secondary"
                     >
                       Cart
