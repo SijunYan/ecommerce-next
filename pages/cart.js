@@ -21,8 +21,11 @@ import {
   Link,
 } from "@mui/material";
 import Image from "next/image";
+import { useRouter } from "next/router";
+import Cookies from "js-cookie";
 
 const cart = () => {
+  const router = useRouter();
   const { state, dispatch } = useContext(Storage);
   const { cart } = state;
 
@@ -40,6 +43,14 @@ const cart = () => {
       type: "CART_DELETE_ITEM",
       payload: item,
     });
+  };
+
+  const checkoutHandler = () => {
+    if (Cookies.get("userInfo")) {
+      router.push("./shipping");
+    } else {
+      router.push("./login?redirect=/shipping");
+    }
   };
 
   return (
@@ -120,7 +131,7 @@ const cart = () => {
                   </Typography>
                 </ListItem>
                 <ListItem>
-                  <Button>Check Out</Button>
+                  <Button onClick={checkoutHandler}>Check Out</Button>
                 </ListItem>
                 <ListItem>
                   <Button>

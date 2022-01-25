@@ -14,6 +14,8 @@ const useStyles = makeStyles({
   main: { minHeight: "90vh" },
   footer: { textAlign: "center" },
   section: { marginTop: 10, marginBottom: 10 },
+  form: { maxWidth: 800, margin: "0 auto" },
+  navUser: { color: "white" },
 });
 
 export default useStyles;

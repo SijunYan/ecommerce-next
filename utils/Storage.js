@@ -1,5 +1,6 @@
 import { createContext, useReducer } from "react";
 import Cookies from "js-cookie";
+import cart from "../pages/cart";
 
 export const Storage = createContext();
 
@@ -12,6 +13,9 @@ const initialState = {
       : [],
     totalAmount: 0,
   },
+  userInfo: Cookies.get("userInfo")
+    ? JSON.parse(Cookies.get("userInfo"))
+    : null,
 };
 
 const reducer = (state, action) => {
@@ -86,6 +90,16 @@ const reducer = (state, action) => {
           cartItems: updatedCartItems,
         },
       };
+    }
+    case "USER_LOGIN": {
+      const userInfo = action.payload;
+      Cookies.set("userInfo", JSON.stringify(userInfo));
+      return { ...state, userInfo };
+    }
+    case "USER_LOGOUT": {
+      Cookies.remove("userInfo");
+      Cookies.remove("cartItems");
+      return { ...state, cart: { ...cart, cartItems: [] }, userInfo: null };
     }
   }
 };
