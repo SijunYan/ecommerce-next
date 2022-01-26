@@ -11,7 +11,12 @@ const initialState = {
     cartItems: Cookies.get("cartItems")
       ? JSON.parse(Cookies.get("cartItems"))
       : [],
-    totalAmount: 0,
+    adressInfo: Cookies.get("adressInfo")
+      ? JSON.parse(Cookies.get("adressInfo"))
+      : {},
+    paymentMethod: Cookies.get("paymentMethod")
+      ? Cookies.get("paymentMethod")
+      : null,
   },
   userInfo: Cookies.get("userInfo")
     ? JSON.parse(Cookies.get("userInfo"))
@@ -99,7 +104,24 @@ const reducer = (state, action) => {
     case "USER_LOGOUT": {
       Cookies.remove("userInfo");
       Cookies.remove("cartItems");
-      return { ...state, cart: { ...cart, cartItems: [] }, userInfo: null };
+      return {
+        ...state,
+        cart: { ...state.cart, cartItems: [] },
+        userInfo: null,
+      };
+    }
+    case "SAVE_ADRESS": {
+      const adressInfo = action.payload;
+      Cookies.set("adressInfo", JSON.stringify(adressInfo));
+      return { ...state, cart: { ...state.cart, adressInfo } };
+    }
+    case "SAVE_PAYMENT_METHOD": {
+      console.log(action.payload);
+      Cookies.set("paymentMethod", action.payload);
+      return {
+        ...state,
+        cart: { ...state.cart, paymentMethod: action.payload },
+      };
     }
   }
 };

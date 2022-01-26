@@ -81,7 +81,7 @@ const cart = () => {
                 </TableHead>
                 <TableBody>
                   {cart.cartItems.map((item) => (
-                    <TableRow key={item.id}>
+                    <TableRow key={item._id}>
                       <TableCell>
                         <Image
                           src={item.image}

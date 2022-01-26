@@ -65,7 +65,7 @@ const Layout = (props) => {
     },
     typography: {
       h1: { fontSize: "1.6rem", fontWeight: "bold", margin: "1rem 0" },
-      h1: { fontSize: "1.4rem", fontWeight: "bold", margin: "1rem 0" },
+      h2: { fontSize: "1.4rem", fontWeight: "bold", margin: "1rem 0" },
     },
   });
 
