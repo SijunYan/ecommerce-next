@@ -137,7 +137,7 @@ const Layout = (props) => {
                   </Menu>
                 </div>
               ) : (
-                <NextLink href="/login" passHref>
+                <NextLink href={`/login?redirect=${route.asPath}`} passHref>
                   <Link>login</Link>
                 </NextLink>
               )}
