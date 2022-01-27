@@ -23,43 +23,83 @@ import { useRouter } from "next/router";
 import CheckoutWizard from "../src/components/checkoutWizard";
 import dynamic from "next/dynamic";
 import Image from "next/image";
-import { typography } from "@mui/system";
 
 const PlaceOrder = (props) => {
   const classes = useStyles();
-  const [paymentMethod, setPaymentMethod] = useState();
+  const [orderSucceed, setOrderSucceed] = useState(false);
   const { state, dispatch } = useContext(Storage);
-  const { cart, useInfo } = state;
-  const { fullName, streetAdress, suburb, postCode, stateName } =
-    cart.adressInfo;
-  const { cartItems, adressInfo } = state.cart;
+  const { cart, userInfo } = state;
+  const { cartItems, adressInfo, paymentMethod } = state.cart;
   const router = useRouter();
   const { redirect } = router.query;
+
   if (!Cookies.get("userInfo")) {
-    typeof window !== "undefined" && router.push("/login?redirect=/shipping");
+    typeof window !== "undefined" &&
+      router.push("/login?redirect=/place-order");
   }
   // check if the adress session has been finished
-  //
-
-  const itemsPrice = cartItems.reduce(
-    (pre, cur) => pre + cur.price * cur.quantity,
-    0
-  );
+  if (!state.cart.adressInfo) {
+    router.push("/login?redirect=/shipping");
+  }
+  // if (!state.cart.paymentMethod) {
+  //   typeof window !== "undefined" && router.push("/login?redirect=/payment");
+  // }
+  if (cartItems) {
+    const itemsPrice = cartItems.reduce(
+      (pre, cur) => pre + cur.price * cur.quantity,
+      0
+    );
+  }
   const shippingPrice = itemsPrice > 200 ? 0 : 15;
   const taxPrice = Math.round(itemsPrice * 0.1 * 100) / 100;
   const totalPrice = itemsPrice + taxPrice + shippingPrice;
 
   const palceOrderHandler = async (e) => {
-    return;
     e.preventDefault();
-    if (!paymentMethod) {
-      alert("Payment method is required");
-      return;
+    // check all the info is prepared
+    //send the order data to DB and save it
+    const dataBody = {
+      items: cartItems.map((item) => item._id),
+      paymentMethod: paymentMethod,
+      adressInfo: adressInfo,
+      price: { itemsPrice, shippingPrice, taxPrice, totalPrice },
+    };
+    try {
+      const res = await fetch("/api/order", {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + userInfo.token,
+        },
+        body: JSON.stringify(dataBody),
+      });
+      if (res.ok) {
+        const comfirmedOrder = await res.json();
+        console.log(comfirmedOrder);
+
+        console.log("!!!!!!!!!!!!!!!!!!!!!finish");
+        router.push("/profile");
+        dispatch({ type: "FINISH_ORDER" });
+      } else {
+        const errMessage = await res.json();
+        console.log(`serser error`);
+        console.log(errMessage);
+        if (errMessage === "token is invalid") {
+          alert("Your authetication is expired, please login again");
+          router.push("/login?redirect=/place-order");
+        }
+      }
+    } catch (err) {
+      console.log(err.message);
     }
-    dispatch({ type: "SAVE_PAYMENT_METHOD", payload: paymentMethod });
-    router.push("/place-order");
   };
 
+  if (!cart) {
+    return <div>no items in the cart</div>;
+  }
   return (
     <Layout>
       <div className={classes.wizard}>
@@ -78,7 +118,9 @@ const PlaceOrder = (props) => {
                 </Typography>
               </ListItem>
               <ListItem>
-                {fullName}, {streetAdress}, {suburb}, {stateName}, {postCode}
+                {cart.adressInfo?.fullName}, {cart.adressInfo?.streetAdress},{" "}
+                {cart.adressInfo?.suburb}, {cart.adressInfo?.stateName},{" "}
+                {cart.adressInfo?.postCode}
               </ListItem>
             </List>
           </Card>
@@ -111,7 +153,7 @@ const PlaceOrder = (props) => {
                       </TableRow>
                     </TableHead>
                     <TableBody>
-                      {cart.cartItems.map((item) => (
+                      {cart.cartItems?.map((item) => (
                         <TableRow key={item._id}>
                           <TableCell>
                             <Image
@@ -147,7 +189,7 @@ const PlaceOrder = (props) => {
                   </Grid>
                   <Grid item xs={6}>
                     <Typography align="right">
-                      ${itemsPrice.toFixed(2)}
+                      ${itemsPrice?.toFixed(2)}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -159,7 +201,7 @@ const PlaceOrder = (props) => {
                   </Grid>
                   <Grid item xs={6}>
                     <Typography align="right">
-                      ${taxPrice.toFixed(2)}
+                      ${taxPrice?.toFixed(2)}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -171,7 +213,7 @@ const PlaceOrder = (props) => {
                   </Grid>
                   <Grid item xs={6}>
                     <Typography align="right">
-                      ${shippingPrice.toFixed(2)}
+                      ${shippingPrice?.toFixed(2)}
                     </Typography>
                   </Grid>
                 </Grid>
@@ -185,7 +227,7 @@ const PlaceOrder = (props) => {
                   </Grid>
                   <Grid item xs={6}>
                     <Typography align="right">
-                      <strong>${totalPrice.toFixed(2)}</strong>
+                      <strong>${totalPrice?.toFixed(2)}</strong>
                     </Typography>
                   </Grid>
                 </Grid>

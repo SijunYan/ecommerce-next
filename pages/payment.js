@@ -37,7 +37,7 @@ const payment = (props) => {
 
   const submitHandler = async (e) => {
     e.preventDefault();
-    if (!state.cart.paymentMethod) {
+    if (!paymentMethod) {
       alert("Payment method is required");
       return;
     }

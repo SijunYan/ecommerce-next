@@ -116,11 +116,17 @@ const reducer = (state, action) => {
       return { ...state, cart: { ...state.cart, adressInfo } };
     }
     case "SAVE_PAYMENT_METHOD": {
-      console.log(action.payload);
       Cookies.set("paymentMethod", action.payload);
       return {
         ...state,
         cart: { ...state.cart, paymentMethod: action.payload },
+      };
+    }
+    case "FINISH_ORDER": {
+      Cookies.remove("cartItems");
+      return {
+        ...state,
+        cart: { ...state.cart, cartItems: [] },
       };
     }
   }
@@ -129,6 +135,6 @@ const reducer = (state, action) => {
 export const ContextProvider = (props) => {
   const [state, dispatch] = useReducer(reducer, initialState);
   const value = { state, dispatch };
-  console.log(value);
+  // console.log(value);
   return <Storage.Provider value={value}>{props.children}</Storage.Provider>;
 };
